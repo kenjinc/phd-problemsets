@@ -60,6 +60,7 @@ while this represents the portion of dyads that are reciprocated.
 
 ```{r}
 detach("package:sna",unload=TRUE)
+detach("package:network", unload=TRUE)
 ```
 
 ```{r}
@@ -70,9 +71,16 @@ library(igraph)
 dim(senator_data_asmat)
 ```
 
-Issues with non-square matrix - will resolve later after researching function parameters.
+```{r}
+mat <- as.matrix(read.csv("/Users/kenjinchang/github/phd-problemsets/data/nys_senators_edgelist.csv"),rownames=1,header=TRUE) 
+mat %>% head(6)
+```
 
+```{r,eval=FALSE}
+```
 
-graph_from_adjacency_matrix(adjmatrix=senator_data_asmat, mode="directed",diag=FALSE)
+g1 <- graph_from_adjacency_matrix(adjmatrix=mat,mode="directed",diag=TRUE)
+
+having trouble configuring the data to fit the function requirements - will revisit when I have more time.
 
 

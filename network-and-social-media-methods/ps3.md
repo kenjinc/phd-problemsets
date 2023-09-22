@@ -85,6 +85,7 @@ while this represents the portion of dyads that are reciprocated.
 
 ``` r
 detach("package:sna",unload=TRUE)
+detach("package:network", unload=TRUE)
 ```
 
 ``` r
@@ -93,13 +94,6 @@ library(igraph)
 
     ## 
     ## Attaching package: 'igraph'
-
-    ## The following objects are masked from 'package:network':
-    ## 
-    ##     %c%, %s%, add.edges, add.vertices, delete.edges, delete.vertices,
-    ##     get.edge.attribute, get.edges, get.vertex.attribute, is.bipartite,
-    ##     is.directed, list.edge.attributes, list.vertex.attributes,
-    ##     set.edge.attribute, set.vertex.attribute
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -115,8 +109,21 @@ dim(senator_data_asmat)
 
     ## [1] 300   2
 
-Issues with non-square matrix - will resolve later after researching
-function parameters.
+``` r
+mat <- as.matrix(read.csv("/Users/kenjinchang/github/phd-problemsets/data/nys_senators_edgelist.csv"),rownames=1,header=TRUE) 
+mat %>% head(6)
+```
 
-graph_from_adjacency_matrix(adjmatrix=senator_data_asmat,
-mode=“directed”,diag=FALSE)
+    ##   follower  followee     
+    ## 1 "Amedore" "LaValle"    
+    ## 2 "Amedore" "Hannon"     
+    ## 3 "Amedore" "Ortt"       
+    ## 4 "Amedore" "Lanza"      
+    ## 5 "Amedore" "Bonacic"    
+    ## 6 "Amedore" "DeFrancisco"
+
+g1 \<-
+graph_from_adjacency_matrix(adjmatrix=mat,mode=“directed”,diag=TRUE)
+
+having trouble configuring the data to fit the function requirements -
+will revisit when I have more time.
