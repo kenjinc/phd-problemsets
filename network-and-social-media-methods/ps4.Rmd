@@ -1,0 +1,98 @@
+---
+title: "ps4"
+output: github_document
+date: "2023-09-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## loading in igraph
+
+```{r}
+library(igraph)
+```
+
+## reading in 'nys_senator' data
+
+```{r}
+senator_edgelist <- read.csv("/Users/kenjinchang/github/phd-problemsets/data/nys_senators_edgelist.csv")
+senator_edgelist
+```
+## calculating degree centrality
+
+```{r}
+mat <- as.matrix(senator_edgelist, header=TRUE)
+```
+
+```{r}
+g1 <- graph_from_edgelist(mat)
+```
+
+#### out degree
+
+```{r}
+outdeg <- degree(g1,mode="out")
+outdeg
+```
+
+```{r}
+outdeg <- sort(outdeg,decreasing=TRUE) 
+outdeg %>% head(6)
+```
+
+```{r}
+outdeg %>% tail(6)
+```
+
+```{r}
+ l=layout.fruchterman.reingold(g1)
+```
+
+
+```{r}
+plot(g1, vertex.size=V(g1)$outdegree, edge.arrow.size=.2, vertex.label.cex=.7,layout=l)
+```
+
+### in degree
+
+```{r}
+indeg <- degree(g1, mode="in")
+indeg
+```
+
+```{r}
+indeg <- sort(indeg, decreasing=TRUE)
+indeg %>% head(6)
+```
+
+```{r}
+indeg %>% tail(6)
+```
+
+```{r}
+plot(g1, vertex.size=V(g1)$indegree, edge.arrow.size=.2, vertex.label.cex=.5, layout=l)
+```
+
+### mutual ties
+
+```{r}
+g1.mut <- as.undirected(g1, mode="mutual")
+deg.mut <- degree(g1.mut) 
+deg.mut <- sort(deg.mut, decreasing=TRUE)
+```
+
+```{r}
+deg.mut %>% head(6)
+```
+
+```{r}
+deg.mut %>% tail(6)
+```
+
+```{r}
+plot(g1.mut, vertex.size=V(g1.mut)$degree, vertex.label.cex=.5, layout=l)
+```
+
+
