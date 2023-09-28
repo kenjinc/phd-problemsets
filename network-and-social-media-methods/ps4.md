@@ -690,4 +690,26 @@ sd(V(g1.mut)$betweenness)/mean(V(g1.mut)$betweenness)
 hist(V(g1.mut)$betweenness)
 ```
 
-![](ps4_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+![](ps4_files/figure-gfm/unnamed-chunk-39-1.png)<!-- --> \### brief
+reflection
+
+based on what we’ve done here, we can see that there is a high level of
+betweenness centrality within this network structure, such that certain
+individuals (if we are to look at the network as one including nodes of
+senators) play a salient role in allowing information to pass from one
+segment of the network to another. Based on this, we can infer that the
+individuals who play this mediating/bridge-spanning/gate-keeping role
+hold a lot of power, since they have diverse access to information from
+various network segments. From an organizational behavior perspective,
+this provides important insights into how bureaucratic decisions are
+made, mediated, and brokered, with major implications for how policy
+deals and transactions are brokered in the U.S. Senate.
+
+Conversely, if we were to look at the nodes of this network as objects -
+say, as bills signed by senators only at the highest cohesive-block
+level (k=5), then we may instead want to focus on closeness centrality
+as a possible measure of interest. Here, we see that there are a lot of
+connections between non-isolate nodes, which, in this hypothetical,
+could suggest that the bills signed by senators with a lot of power tend
+to have short path lengths between one another, indicating that senators
+sign a lot of the same bills when they have high levels of power.
