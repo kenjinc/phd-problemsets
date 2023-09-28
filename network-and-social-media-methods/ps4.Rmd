@@ -96,3 +96,124 @@ plot(g1.mut, vertex.size=V(g1.mut)$degree, vertex.label.cex=.5, layout=l)
 ```
 
 
+### degree centralization
+
+#### out degree
+
+```{r}
+cent.g1.out <- centralization.degree(g1, mode="out", normalized=TRUE)
+cent.g1.out$centralization
+```
+
+#### in degree
+
+```{r}
+cent.g1.in <- centralization.degree(g1, mode="in", normalized=TRUE)
+cent.g1.in$centralization
+```
+
+```{r}
+degree.dist.out <- degree.distribution(g1, mode="out", cumulative = TRUE)
+degree.dist.out
+```
+
+```{r}
+plot(degree.dist.out, xlab="Degree", ylab="Cumulative Frequency")
+```
+
+```{r}
+plot(degree.dist.out, xlab="Log Out Degree", ylab="Cumulative Frequency", log="xy")
+```
+
+```{r}
+cent <- centralization.degree(g1.mut, mode="all", normalized=TRUE)
+cent$centralization
+```
+
+```{r}
+centralization.degree(g1, normalized=TRUE)
+```
+
+### page-rank centrality
+
+```{r}
+pr.g1 <- page.rank(g1)
+pr.g1
+```
+
+```{r}
+V(g1)$pagerank <- pr.g1$vector
+pr.df <- data.frame(name=V(g1)$name, pagerank=V(g1)$pagerank)
+```
+
+```{r}
+pr.df %>% head(6)
+```
+
+```{r}
+pr.df %>% tail(6)
+```
+```{r}
+library(dplyr)
+```
+
+```{r}
+pr.df <- arrange(pr.df, desc(pagerank))
+head(pr.df)
+```
+
+```{r}
+l=layout.fruchterman.reingold(g1)
+plot(g1, vertex.size=V(g1)$pagerank*300, edge.arrow.size=.2, vertex.label.cex=.7, layout=l)
+```
+
+### closeness centrality
+
+```{r}
+close.g1.m <- closeness(g1.mut, normalized=TRUE)
+avg.paths.g1.m <- 1/close.g1.m
+avg.paths.g1.m
+```
+
+```{r}
+close.g1.m[is.nan(close.g1.m)] <- 0
+V(g1.mut)$closeness <- close.g1.m
+plot(g1.mut, vertex.size=V(g1.mut)$degree, vertex.label.cex=.7, layout=l)
+```
+
+```{r}
+plot(g1.mut, vertex.size=V(g1.mut)$closeness*20, vertex.label.cex=.7, layout=l)
+```
+
+### betweenness centrality
+
+```{r}
+betw.g1.m <- betweenness(g1.mut, normalized=FALSE)
+betw.g1.m
+```
+
+```{r}
+V(g1.mut)$betweenness <- betw.g1.m
+plot(g1.mut, vertex.size=V(g1.mut)$betweenness, vertex.label.cex=.7, layout=l)
+```
+
+### betweenness centralization and node variation
+
+```{r}
+centralization.betweenness(g1.mut, normalized=TRUE)$centralization
+```
+
+```{r}
+sd(V(g1.mut)$betweenness)/mean(V(g1.mut)$betweenness)
+```
+
+
+```{r}
+hist(V(g1.mut)$betweenness)
+```
+### brief reflection
+
+based on what we've done here, we can see that there is a high level of betweenness centrality within this network structure, such that certain individuals (if we are to look at the network as one including nodes of senators) play a salient role in allowing information to pass from one segment of the network to another. Based on this, we can infer that the individuals who play this mediating/bridge-spanning/gate-keeping role hold a lot of power, since they have diverse access to information from various network segments. From an organizational behavior perspective, this provides important insights into how bureaucratic decisions are made, mediated, and brokered, with major implications for how policy deals and transactions are brokered in the U.S. Senate. 
+
+Conversely, if we were to look at the nodes of this network as objects - say, as bills signed by senators only at the highest cohesive-block level (k=5), then we may instead want to focus on  closeness centrality as a possible measure of interest. Here, we see that there are a lot of connections between non-isolate nodes, which, in this hypothetical, could suggest that the bills signed by senators with a lot of power tend to have short path lengths between one another, indicating that senators sign a lot of the same bills when they have high levels of power. 
+

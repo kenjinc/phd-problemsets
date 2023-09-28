@@ -451,3 +451,243 @@ plot(g1.mut, vertex.size=V(g1.mut)$degree, vertex.label.cex=.5, layout=l)
 ```
 
 ![](ps4_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+### degree centralization
+
+#### out degree
+
+``` r
+cent.g1.out <- centralization.degree(g1, mode="out", normalized=TRUE)
+cent.g1.out$centralization
+```
+
+    ## [1] 0.6330645
+
+#### in degree
+
+``` r
+cent.g1.in <- centralization.degree(g1, mode="in", normalized=TRUE)
+cent.g1.in$centralization
+```
+
+    ## [1] 0.2137097
+
+``` r
+degree.dist.out <- degree.distribution(g1, mode="out", cumulative = TRUE)
+degree.dist.out
+```
+
+    ##  [1] 1.00000 0.93750 0.90625 0.87500 0.84375 0.71875 0.65625 0.56250 0.50000
+    ## [10] 0.46875 0.43750 0.40625 0.37500 0.34375 0.28125 0.21875 0.15625 0.12500
+    ## [19] 0.09375 0.09375 0.06250 0.06250 0.03125 0.03125 0.03125 0.03125 0.03125
+    ## [28] 0.03125 0.03125 0.03125
+
+``` r
+plot(degree.dist.out, xlab="Degree", ylab="Cumulative Frequency")
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+plot(degree.dist.out, xlab="Log Out Degree", ylab="Cumulative Frequency", log="xy")
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+cent <- centralization.degree(g1.mut, mode="all", normalized=TRUE)
+cent$centralization
+```
+
+    ## [1] 0.2580645
+
+``` r
+centralization.degree(g1, normalized=TRUE)
+```
+
+    ## $res
+    ##  [1] 17 20 20  9 17 15 25 37 21 30 30 22 30 23 22 22 19 20 13 22 26 22 14  7 24
+    ## [26] 37  6  9  6  8  1  6
+    ## 
+    ## $centralization
+    ## [1] 0.3038502
+    ## 
+    ## $theoretical_max
+    ## [1] 1922
+
+### page-rank centrality
+
+``` r
+pr.g1 <- page.rank(g1)
+pr.g1
+```
+
+    ## $vector
+    ##     Amedore     LaValle      Hannon        Ortt       Lanza     Bonacic 
+    ## 0.018096994 0.038779465 0.045556754 0.013232778 0.034368044 0.027503248 
+    ## DeFrancisco      Golden      Griffo     Martins    Gallivan      Avella 
+    ## 0.044779450 0.068039709 0.018874010 0.058877831 0.043834611 0.043236499 
+    ##      Parker    Carlucci     Serrano     Peralta      Rivera       Klein 
+    ## 0.049846876 0.043014455 0.036800891 0.032706541 0.047217636 0.047475389 
+    ##    Squadron       Boyle     Kennedy       Croci      Robach     Ritchie 
+    ## 0.025569762 0.028368491 0.038170691 0.020571451 0.032764613 0.019408043 
+    ##     Latimer      Comrie    Stavisky       Dilan      Larkin   Panepinto 
+    ## 0.033279175 0.025405198 0.013937642 0.019363258 0.006109957 0.013335258 
+    ##      Felder       OMara 
+    ## 0.006109957 0.005365322 
+    ## 
+    ## $value
+    ## [1] 1
+    ## 
+    ## $options
+    ## NULL
+
+``` r
+V(g1)$pagerank <- pr.g1$vector
+pr.df <- data.frame(name=V(g1)$name, pagerank=V(g1)$pagerank)
+```
+
+``` r
+pr.df %>% head(6)
+```
+
+    ##      name   pagerank
+    ## 1 Amedore 0.01809699
+    ## 2 LaValle 0.03877947
+    ## 3  Hannon 0.04555675
+    ## 4    Ortt 0.01323278
+    ## 5   Lanza 0.03436804
+    ## 6 Bonacic 0.02750325
+
+``` r
+pr.df %>% tail(6)
+```
+
+    ##         name    pagerank
+    ## 27  Stavisky 0.013937642
+    ## 28     Dilan 0.019363258
+    ## 29    Larkin 0.006109957
+    ## 30 Panepinto 0.013335258
+    ## 31    Felder 0.006109957
+    ## 32     OMara 0.005365322
+
+``` r
+library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:igraph':
+    ## 
+    ##     as_data_frame, groups, union
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+pr.df <- arrange(pr.df, desc(pagerank))
+head(pr.df)
+```
+
+    ##      name   pagerank
+    ## 1  Golden 0.06803971
+    ## 2 Martins 0.05887783
+    ## 3  Parker 0.04984688
+    ## 4   Klein 0.04747539
+    ## 5  Rivera 0.04721764
+    ## 6  Hannon 0.04555675
+
+``` r
+l=layout.fruchterman.reingold(g1)
+plot(g1, vertex.size=V(g1)$pagerank*300, edge.arrow.size=.2, vertex.label.cex=.7, layout=l)
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+### closeness centrality
+
+``` r
+close.g1.m <- closeness(g1.mut, normalized=TRUE)
+avg.paths.g1.m <- 1/close.g1.m
+avg.paths.g1.m
+```
+
+    ##     Amedore     LaValle      Hannon        Ortt       Lanza     Bonacic 
+    ##    2.535714    2.250000    2.428571    2.392857    2.571429    2.571429 
+    ## DeFrancisco      Golden      Griffo     Martins    Gallivan      Avella 
+    ##    2.107143    1.714286    1.892857    1.928571    1.750000    2.178571 
+    ##      Parker    Carlucci     Serrano     Peralta      Rivera       Klein 
+    ##    1.964286    2.035714    1.928571    1.821429    1.892857    2.178571 
+    ##    Squadron       Boyle     Kennedy       Croci      Robach     Ritchie 
+    ##    2.535714    2.035714    1.892857    2.535714    2.392857         NaN 
+    ##     Latimer      Comrie    Stavisky       Dilan      Larkin   Panepinto 
+    ##    2.000000    2.107143    3.071429    2.928571    3.071429    2.500000 
+    ##      Felder       OMara 
+    ##         NaN         NaN
+
+``` r
+close.g1.m[is.nan(close.g1.m)] <- 0
+V(g1.mut)$closeness <- close.g1.m
+plot(g1.mut, vertex.size=V(g1.mut)$degree, vertex.label.cex=.7, layout=l)
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
+``` r
+plot(g1.mut, vertex.size=V(g1.mut)$closeness*20, vertex.label.cex=.7, layout=l)
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+
+### betweenness centrality
+
+``` r
+betw.g1.m <- betweenness(g1.mut, normalized=FALSE)
+betw.g1.m
+```
+
+    ##     Amedore     LaValle      Hannon        Ortt       Lanza     Bonacic 
+    ##   1.4166667   4.3833333   0.6583333   2.9500000   0.0000000   0.0000000 
+    ## DeFrancisco      Golden      Griffo     Martins    Gallivan      Avella 
+    ##  18.9941850  83.2538004  26.1901557  28.2332875  56.5646978   9.9011905 
+    ##      Parker    Carlucci     Serrano     Peralta      Rivera       Klein 
+    ##  41.5410714  21.3267399  29.0994048  24.0467033  22.5621795   6.6020604 
+    ##    Squadron       Boyle     Kennedy       Croci      Robach     Ritchie 
+    ##   0.3333333   6.0500000  37.6479853   0.7916667   0.0000000   0.0000000 
+    ##     Latimer      Comrie    Stavisky       Dilan      Larkin   Panepinto 
+    ##  24.2529304  59.1002747   0.0000000   0.0000000   0.0000000   1.1000000 
+    ##      Felder       OMara 
+    ##   0.0000000   0.0000000
+
+``` r
+V(g1.mut)$betweenness <- betw.g1.m
+plot(g1.mut, vertex.size=V(g1.mut)$betweenness, vertex.label.cex=.7, layout=l)
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+### betweenness centralization and node variation
+
+``` r
+centralization.betweenness(g1.mut, normalized=TRUE)$centralization
+```
+
+    ## [1] 0.1496442
+
+``` r
+sd(V(g1.mut)$betweenness)/mean(V(g1.mut)$betweenness)
+```
+
+    ## [1] 1.330008
+
+``` r
+hist(V(g1.mut)$betweenness)
+```
+
+![](ps4_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
