@@ -1,0 +1,62 @@
+---
+title: "cue_sensitivity"
+output: github_document
+date: "2023-10-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## package and data loading 
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+```
+
+```{r}
+sum_mc <- read_csv("/Users/kenjinchang/github/phd-problemsets/data/dummy_summary_mc.csv")
+sum_ct <- read_csv("/Users/kenjinchang/github/phd-problemsets/data/dummy_summary_ct.csv")
+sum_ri <- read_csv("/Users/kenjinchang/github/phd-problemsets/data/dummy_summary_ri.csv")
+```
+
+## quick visualizations
+
+### main effect of menu comp on selection
+
+```{r}
+a <- ggplot(sum_mc,aes(x=menu_comp,y=plant_select,fill=menu_comp)) + 
+  geom_col() +
+  scale_fill_viridis_c(option="G") +
+  xlab("menu composition") +
+  ylab("plant-selection frequency") + 
+  guides(fill="none") +
+  theme(panel.grid=element_blank(),panel.border=element_rect(color="black",fill="NA"),panel.background=element_rect(fill="white"))
+```
+
+```{r}
+b <- ggplot(sum_ct,aes(x=cog_type,y=plant_select,fill=cog_type)) + 
+  geom_col() +
+  scale_fill_viridis_d(option="G") +
+  xlab("cue sensitivity type") +
+  ylab("plant-selection frequency") + 
+  guides(fill="none") +
+  theme(panel.grid=element_blank(),panel.border=element_rect(color="black",fill="NA"),panel.background=element_rect(fill="white"))
+```
+
+```{r}
+c <- ggplot(sum_ri,aes(x=red_int,y=plant_select,fill=red_int)) + 
+  geom_col() +
+  scale_fill_viridis_d(option="G") +
+  xlab("reduction intention") +
+  ylab("plant-selection frequency") + 
+  guides(fill="none") +
+  theme(panel.grid=element_blank(),panel.border=element_rect(color="black",fill="NA"),panel.background=element_rect(fill="white"))
+```
+
+```{r}
+ggarrange(a,b,c,
+          ncol=2,nrow=2)
+```
+
