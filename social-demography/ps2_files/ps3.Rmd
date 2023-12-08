@@ -1,0 +1,235 @@
+---
+title: "problem set 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## problem set 3
+
+### data and package loading
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+clarktracts <- read.csv("/Users/kenjinchang/github/phd-problemsets/data/clarktracts.csv")
+clarktracts %>% head(10)
+```
+
+### projecting population of a single census tract 
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01")
+p1_clarktracts %>% head(10)
+```
+First, we need to solve for the projected population aged 15-44 and the projected population aged 25-54.
+
+This requires first calculating the CCR for the population aged 15-44 and the population aged 25-54.
+
+Let's begin with the CCR for the population aged 15-44:
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00))
+p1_clarktracts %>% head(10)
+```
+We can see that the associated CCR for the population aged 15-44 is 1.08 (3sf).
+
+Now, we do the same for the CCR for the population aged 25-54:
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00))
+p1_clarktracts %>% head(10)
+```
+
+We can see that the associated CCR for the population aged 25-54 is 0.987 (3sf).
+
+With these CCR values, we can now derive the projected populations for these age groups in 2020. 
+
+We'll do the 15-44 age distribution first: 
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10))
+p1_clarktracts %>% head(10)
+```
+
+From this, we know that we can expect there to be approximately 3,200 people aged 15-44 in this tract in the year 2020, representing an increase of 243 people from 2010. 
+
+Now, we can do the same for the individuals aged 25-54. 
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2454_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10))
+p1_clarktracts %>% head(10)
+```
+
+From this, we know that we can expect there to be approximately 2,765 people aged 25-54 in this tract in the year 2020, representing a decrease of 37 people from 2010. 
+
+With these values calculated, we can now compute the projected populations for (1) 0-4 year olds,(2) 5-9 year olds, and (3) 10-14 year olds in 2020.
+
+1. 0-4 year olds in 2020:
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2454_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20)
+p1_clarktracts %>% head(10)
+```
+As we can see, we can expect there to be approximately 566 people aged 0-4 in this tract in the Year 2020, representing an increase of 43 people from 2010. 
+
+2. 5-9 year olds in 2020:
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2454_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_0509_20=(pop_0509_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20)
+p1_clarktracts %>% head(10)
+```
+As we can see, we can expect there to be approximately 578 people aged 5-9 in this tract in the Year 2020, representing an increase of 46 people from 2010. 
+
+3. 10-14 yer olds in 2020:
+
+```{r}
+p1_clarktracts <- clarktracts %>% 
+  filter(NAME=="Census Tract 1.01") %>%
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2554_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_0509_20=(pop_0509_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_1014_20=(pop_1014_10/(pop_2534_10+pop_3544_10+pop_4554_10))*pop_2554_20)
+p1_clarktracts %>% head(10)
+```
+As we can see, we can expect there to be approximately 552 people aged 10-14 in this tract in the Year 2020, representing a decrease of 8 people from 2010. 
+
+### projecting population of all tracts
+
+Now, we will expand this out to all included tracts within Clark County. 
+
+```{r}
+p2clarktracts <- clarktracts %>% 
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2554_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_0509_20=(pop_0509_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_1014_20=(pop_1014_10/(pop_2534_10+pop_3544_10+pop_4554_10))*pop_2554_20)
+p2clarktracts %>% 
+  head(10)
+```
+
+
+### exploring components of area where projected population exceeds 10,000 
+
+First, in order to accomplish this, we'll have to generate a new column that sums the projected population aged 0-85+.
+
+To start this process, we will first calculate the CCR for the population aged 0-85+.
+
+```{r}
+p3clarktracts <- clarktracts %>% 
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2554_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_0509_20=(pop_0509_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_1014_20=(pop_1014_10/(pop_2534_10+pop_3544_10+pop_4554_10))*pop_2554_20) %>%
+  mutate(ccr_0085up=((pop_1014_10+pop_1524_10+pop_2534_10+pop_3544_10+pop_4554_10+pop_5564_10+pop_6574_10+pop_7584_10+pop_85up_10))/(pop_total_00))
+p3clarktracts %>% 
+  head(10)
+```
+With this complete, we can now calculate the corresponding population projection: 
+
+```{r}
+p3clarktracts <- clarktracts %>% 
+  mutate(ccr_1544=((pop_2534_10+pop_3544_10+pop_4554_10))/(pop_1524_00+pop_2534_00+pop_3544_00)) %>%
+  mutate(ccr_2554=((pop_3544_10+pop_4554_10+pop_5564_10))/(pop_2534_00+pop_3544_00+pop_4554_00)) %>%
+  mutate(pop_1544_20=ccr_1544*(pop_1524_10+pop_2534_10+pop_3544_10)) %>%
+  mutate(pop_2554_20=ccr_2554*(pop_2534_10+pop_3544_10+pop_4554_10)) %>%
+  mutate(pop_0005_20=(pop_0005_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_0509_20=(pop_0509_10/(pop_1524_10+pop_2534_10+pop_3544_10))*pop_1544_20) %>%
+  mutate(pop_1014_20=(pop_1014_10/(pop_2534_10+pop_3544_10+pop_4554_10))*pop_2554_20) %>%
+  mutate(ccr_0085up=((pop_1014_10+pop_1524_10+pop_2534_10+pop_3544_10+pop_4554_10+pop_5564_10+pop_6574_10+pop_7584_10+pop_85up_10))/(pop_total_00)) %>%
+  mutate(pop_0085up_20=ccr_0085up*pop_total_10)
+p3clarktracts %>% head(10)
+```
+
+With this new variable generated, we can sort the tracts in descending order based on the newly projected populations (after removing `Inf` instances):
+
+```{r}
+p3clarktracts <- clarktracts %>% 
+  mutate(ccr_0085up=((pop_1014_10+pop_1524_10+pop_2534_10+pop_3544_10+pop_4554_10+pop_5564_10+pop_6574_10+pop_7584_10+pop_85up_10))/(pop_total_00)) %>%
+  mutate(pop_0085up_20=ccr_0085up*pop_total_10) %>% 
+  filter(is.finite(pop_0085up_20)) %>%
+  arrange(desc(pop_0085up_20)) 
+p3clarktracts %>% head(10)
+```
+
+
+Better yet, if we wanted to isolate the tracts with a projected population greater than 10,000, we can do the following: 
+
+```{r}
+p3clarktracts <- clarktracts %>% 
+  mutate(ccr_0085up=((pop_1014_10+pop_1524_10+pop_2534_10+pop_3544_10+pop_4554_10+pop_5564_10+pop_6574_10+pop_7584_10+pop_85up_10))/(pop_total_00)) %>%
+  mutate(pop_0085up_20=ccr_0085up*pop_total_10) %>% 
+  filter(is.finite(pop_0085up_20)) %>%
+  filter(pop_0085up_20>=10000) %>%
+  arrange(desc(pop_0085up_20))
+p3clarktracts %>% head(10)
+```
+```{r}
+ggplot(p3clarktracts,aes(pop_0085up_20)) + 
+  geom_freqpoly()
+```
+
+
+As mentioned in the problem site, this is likely driven by these particular areas experiencing rapid population growth, which can cause the projections to overestimate changes in population. 
+
+
+### solving for this issue
+
+A rudimentary way of solving for this is by imposing a ceiling of 10,000:
+
+```{r}
+p4clarktracts <- clarktracts %>% 
+  mutate(ccr_0085up=((pop_1014_10+pop_1524_10+pop_2534_10+pop_3544_10+pop_4554_10+pop_5564_10+pop_6574_10+pop_7584_10+pop_85up_10))/(pop_total_00)) %>%
+  mutate(pop_0085up_20=ccr_0085up*pop_total_10) %>% 
+  filter(is.finite(pop_0085up_20)) %>%
+  arrange(desc(pop_0085up_20)) %>%
+  mutate(pop_0085up_20_ceiling=if_else(pop_0085up_20>=10000,10000,pop_0085up_20)) 
+p4clarktracts %>% head(10)
+```
+```{r}
+ggplot(p4clarktracts,aes(pop_0085up_20)) + 
+  geom_freqpoly()
+```
+
+
